@@ -1,5 +1,5 @@
 # ELARA-Evolving-Language-Adaptive-Response-Agent
-ELARA (Evolving Language &amp; Adaptive Response Agent) is an AI-powered chatbot built from scratch using traditional NLP and machine learning techniques. Designed to understand user queries, adapt dynamically, and improve over time, ELARA combines structured learning, intent recognition, and active learning to enhance conversational flow.
+ELARA (Evolving Language & Adaptive Response Agent) is an AI-powered chatbot built from scratch using traditional NLP and machine learning techniques. Designed to understand user queries, adapt dynamically, and improve over time, ELARA combines structured learning, intent recognition, and active learning to enhance conversational flow.
 
 # Chatbot from Scratch
 
@@ -9,7 +9,7 @@ This project implements a chatbot **without using any pre-trained models or exte
 
 ## Features
 
-- **Intent Recognition** using **SVM + TF-IDF** trained on a **merged dataset** (Chatbot NLU + RLU).
+- **Intent Recognition** using **SVM + TF-IDF** trained on a **merged dataset** (MultiWOZ 2.2 + Clinc OOS + Rasa NLU).
 - **Rule-based Fallback Mechanism** for handling unknown inputs.
 - **Memory System** to retain the last **30 messages** and extract key user information for context-aware responses.
 - **Active Learning System** to improve accuracy over time by reviewing misclassified inputs.
@@ -20,27 +20,32 @@ This project implements a chatbot **without using any pre-trained models or exte
 
 ```
 📂 chatbot_project
- ├── 📂 data
- │   ├── chatbot_nlu.json    # Primary intent dataset
- │   ├── rlu_dataset.json    # Additional dataset for training
- │   ├── merged_data.json    # Final combined dataset
- │   ├── chat_logs.csv       # Stores conversation history
- │   ├── misclassified.csv   # Logs incorrect predictions for retraining
+ ├── 📂 dataset_raw             # Original datasets (downloaded)
+ │   ├── multiwoz_v22/         # MultiWOZ 2.2 raw dataset
+ │   ├── clinc_oos/            # Clinc OOS dataset
+ │   ├── rasa_nlu/             # Rasa NLU dataset
  │
- ├── 📂 models
- │   ├── chatbot_model.pkl   # Trained SVM model
- │   ├── vectorizer.pkl      # TF-IDF vectorizer for text processing
+ ├── 📂 data                   # Merged + Preprocessed dataset
+ │   ├── merged_data.json      # Final combined dataset
+ │   ├── merged_data.csv       # Same dataset in CSV format
+ │   ├── train.json            # Training set
+ │   ├── validation.json       # Validation set
+ │   ├── test.json             # Test set
+ │
+ ├── 📂 models                 # Saved models
+ │   ├── chatbot_model.pkl     # Trained SVM model
+ │   ├── vectorizer.pkl        # TF-IDF vectorizer for text processing
  │
  ├── 📂 src
- │   ├── preprocess.py       # Text cleaning, tokenization, stemming
- │   ├── train.py            # Trains the chatbot using SVM
- │   ├── chatbot.py          # Main chatbot interface
- │   ├── memory.py           # Stores and retrieves important user details
- │   ├── active_learning.py  # Processes misclassified inputs
+ │   ├── preprocess.py         # Merges datasets & splits into train/test/val
+ │   ├── train.py              # Trains the chatbot using SVM
+ │   ├── chatbot.py            # Main chatbot interface
+ │   ├── memory.py             # Stores and retrieves important user details
+ │   ├── active_learning.py    # Processes misclassified inputs
  │
  ├── README.md
  ├── requirements.txt
- ├── run_chatbot.py          # Entry point to launch chatbot
+ ├── run_chatbot.py            # Entry point to launch chatbot
 ```
 
 ## Setup Instructions
@@ -57,7 +62,10 @@ pip install -r requirements.txt
 python src/preprocess.py
 ```
 
-Merges **Chatbot NLU** and **RLU** datasets, cleans text, and stores the final dataset in `merged_data.json`.
+This script:
+- **Merges** datasets from `dataset_raw/` (MultiWOZ 2.2, Clinc OOS, Rasa NLU).
+- **Cleans** text and formats it properly.
+- **Splits** data into `train.json`, `validation.json`, and `test.json`.
 
 ### **3. Train the Chatbot**
 
@@ -66,8 +74,7 @@ python src/train.py
 ```
 
 This script:
-
-- Loads and preprocesses the dataset.
+- Loads and preprocesses the dataset from `data/merged_data.json`.
 - Trains an **SVM classifier** with **TF-IDF features**.
 - Saves the trained model (`chatbot_model.pkl`) and **TF-IDF vectorizer**.
 
@@ -100,7 +107,6 @@ python src/active_learning.py
 ```
 
 This script:
-
 - Reads `misclassified.csv`.
 - Allows manual correction of misclassified intents.
 - Updates `merged_data.json` with new examples.
@@ -113,6 +119,7 @@ This script:
 ## Credits
 
 This chatbot was developed using **NLTK, Scikit-learn, and JSON-based intent storage**, following a structured and scalable approach for continuous learning. 🚀
+
 
 # 🚀 Chatbot Implementation Workflow
 
